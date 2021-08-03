@@ -38,6 +38,9 @@ app.get("/api/:time?", function (req, res) {
         // if the given value is a Date
         if (time.includes("-")) {
             var pastTime = new Date(time);
+            if (!pastTime.getTime() || !pastTime.toUTCString()) {
+                return res.send({ error: "Invalid Date" });
+            }
             return res.send({
                 unix: pastTime.getTime(),
                 utc: pastTime.toUTCString(),
@@ -46,6 +49,9 @@ app.get("/api/:time?", function (req, res) {
         // if the give value is in unix format
         if (!isNaN(time)) {
             var pastTime = new Date(parseInt(time));
+            if (!pastTime.getTime() || !pastTime.toUTCString()) {
+                return res.send({ error: "Invalid Date" });
+            }
             return res.send({
                 unix: pastTime.getTime(),
                 utc: pastTime.toUTCString(),
