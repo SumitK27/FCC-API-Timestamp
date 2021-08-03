@@ -35,30 +35,46 @@ app.get("/api/:time?", function (req, res) {
             utc: currentTime.toUTCString(),
         });
     } else {
-        // if the given value is a Date
-        if (time.includes("-")) {
-            var pastTime = new Date(time);
-            if (!pastTime.getTime() || !pastTime.toUTCString()) {
-                return res.send({ error: "Invalid Date" });
-            }
-            return res.send({
-                unix: pastTime.getTime(),
-                utc: pastTime.toUTCString(),
-            });
-        }
-        // if the give value is in unix format
         if (!isNaN(time)) {
+            console.log("Running 1");
             var pastTime = new Date(parseInt(time));
             if (!pastTime.getTime() || !pastTime.toUTCString()) {
+                console.log("Running 1.1");
                 return res.send({ error: "Invalid Date" });
             }
+            /* 1451001600000 */
+            /* 2015 - Incorrect */
             return res.send({
                 unix: pastTime.getTime(),
                 utc: pastTime.toUTCString(),
             });
-        }
-        // if the given value is in incorrect format
-        if (isNaN(time)) {
+        } else if (isNaN(Date.parse(time))) {
+            console.log("Running 2");
+            var validDate = new Date(time);
+            if (validDate.toString() || Date.parse(validDate)==false) {
+                /* something */
+                /* 2015-13  */
+                /* 2015-13-27 */
+                return res.send({ error: "Invalid Date" });
+            }
+            return res.send({
+                unix: validDate.getTime(),
+                utc: validDate.toUTCString(),
+            });
+        } else if (!isNaN(Date.parse(time))) {
+            console.log("Running 3");
+            /* 2015-12-25 */
+            /* 2015-03 */
+            /* 2015-Dec-27 - Incorrect 26 Dec */
+            /* 2015-Dec - Incorrect 30 Nov */
+            /* Sun, 27 Dec 2015 18:30:00 GMT */
+            var validDate = new Date(time);
+            return res.send({
+                unix: validDate.getTime(),
+                utc: validDate.toUTCString(),
+            });
+        } else {
+            console.log("Running 4");
             return res.send({ error: "Invalid Date" });
         }
     }
